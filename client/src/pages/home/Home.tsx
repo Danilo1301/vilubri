@@ -66,7 +66,7 @@ function Home() {
        
     return (
         <div className='container-fluid'>
-            <div className='row row-cols-2'>
+            <div className='row row-cols-1 row-cols-sm-2'>
                 <Item item={item}/>
                 <Item item={item}/>
                 <Item item={item}/>
