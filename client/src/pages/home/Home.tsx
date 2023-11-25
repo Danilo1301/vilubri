@@ -64,6 +64,18 @@ function Home() {
             setPrice(data);
         })
     }, [])
+
+    //
+
+    const [date, setDate] = React.useState("");
+
+    React.useEffect(() => {
+        fetch("/date.txt")
+        .then(response => response.text())
+        .then(data => {
+            setDate(data);
+        })
+    }, [])
        
     return (
         <div className='container-fluid'>
@@ -74,6 +86,11 @@ function Home() {
                 <div className='col align-self-center'>
                     <div className='nav-alert p-2 shadow-lg text-center'>
                         Aviso
+                    </div>
+                </div>
+                <div className='col-auto align-self-center'>
+                    <div className='nav-date p-2 shadow-lg text-center'>
+                        {date}
                     </div>
                 </div>
             </div>
