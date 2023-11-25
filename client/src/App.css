@@ -29,3 +29,16 @@
     text-align: center;
     font-weight: bold;
 }
+
+.nav {
+    background-color: #F1B201;
+}
+
+.nav-image {
+    width: 150px;
+}
+
+.nav-alert {
+    background-color: #e5c703;
+    border-radius: 20px;
+}
