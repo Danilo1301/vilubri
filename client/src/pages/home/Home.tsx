@@ -90,7 +90,9 @@ function Home() {
                 </div>
                 <div className='col-auto align-self-center'>
                     <div className='nav-date p-2 shadow-lg text-center'>
-                        {date}
+                        <i className="fa-regular fa-calendar" style={{marginRight: "10px"}}></i>
+                        <span>{date}</span>
+                        
                     </div>
                 </div>
             </div>
