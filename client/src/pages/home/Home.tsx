@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from '../../../public/logo-vilubri.png';
 
 interface IItem {
     title: string
@@ -23,7 +22,6 @@ function Item({item}: {item: IItem}) {
                         {lines.map((line, i) => <div key={i}>{line}</div>)}
                     </div>
                 </div>
-                
             </div>
         </>
     );
@@ -92,7 +90,6 @@ function Home() {
                     <div className='nav-date p-2 shadow-lg text-center'>
                         <i className="fa-regular fa-calendar" style={{marginRight: "10px"}}></i>
                         <span>{date}</span>
-                        
                     </div>
                 </div>
             </div>
