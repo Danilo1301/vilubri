@@ -15,7 +15,7 @@ function Item({item}: {item: IItem}) {
                 <div className="item-title">{item.title}</div>
                 <div className="row">
                     <div className="col-auto">
-                        <img className="item-image rounded border" src="/image.png" alt="..."/>
+                        <img className="item-image border" src="/image.png" alt={item.title}/>
                         <div className="item-price">{item.price}</div>
                     </div>
                     <div className="item-description col p-0">
@@ -91,7 +91,7 @@ function Home() {
         <div className='container-fluid'>
             <div className="nav row">
                 <div className='col'>
-                    <img className="nav-image p-2" src="logo-vilubri.png"></img>
+                    <img className="nav-image p-2" src="logo-vilubri.png" alt="Vilubri"></img>
                 </div>
                 <div className='col align-self-center'>
                     <div className='nav-alert p-2 text-center'>
@@ -106,8 +106,6 @@ function Home() {
                 </div>
             </div>
             <div className='row row-cols-1 row-cols-sm-2'>
-                <Item item={item}/>
-                <Item item={item}/>
                 <Item item={item}/>
                 <Item item={item}/>
                 <Item item={item}/>

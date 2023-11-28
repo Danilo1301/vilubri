@@ -1,0 +1,3 @@
+[X] commit: "added footer"
+[X] remove shadow
+[-] put .txt files in .data

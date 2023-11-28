@@ -1,3 +1,0 @@
-- em alumínio
-- para óleo diesel, gasolina, etanol
-- pressão de trabalho até 50 psi - 3,5 bar
