@@ -94,12 +94,12 @@ function Home() {
                     <img className="nav-image p-2" src="logo-vilubri.png"></img>
                 </div>
                 <div className='col align-self-center'>
-                    <div className='nav-alert p-2 shadow-lg text-center'>
+                    <div className='nav-alert p-2 text-center'>
                         Aviso
                     </div>
                 </div>
                 <div className='col-auto align-self-center'>
-                    <div className='nav-date p-2 shadow-lg text-center'>
+                    <div className='nav-date p-2 text-center'>
                         <i className="fa-regular fa-calendar" style={{marginRight: "10px"}}></i>
                         <span>{date}</span>
                     </div>
@@ -114,7 +114,7 @@ function Home() {
             </div>
             <div className="footer row p-2 justify-content-end">
                 <div className='col-auto'>
-                    <div className='footer-number p-2 shadow-lg text-center'>
+                    <div className='footer-number p-2 text-center'>
                         <i className="fa-regular fa-file" style={{marginRight: "10px"}}></i>
                         <span>{number}</span>
                     </div>
