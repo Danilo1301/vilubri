@@ -74,6 +74,18 @@ function Home() {
             setDate(data);
         })
     }, [])
+
+    //
+
+    const [number, setNumber] = React.useState("");
+
+    React.useEffect(() => {
+        fetch("/number.txt")
+        .then(response => response.text())
+        .then(data => {
+            setNumber(data);
+        })
+    }, [])
        
     return (
         <div className='container-fluid'>
@@ -99,6 +111,14 @@ function Home() {
                 <Item item={item}/>
                 <Item item={item}/>
                 <Item item={item}/>
+            </div>
+            <div className="footer row p-2 justify-content-end">
+                <div className='col-auto'>
+                    <div className='footer-number p-2 shadow-lg text-center'>
+                        <i className="fa-regular fa-file" style={{marginRight: "10px"}}></i>
+                        <span>{number}</span>
+                    </div>
+                </div>
             </div>
         </div>
     );
