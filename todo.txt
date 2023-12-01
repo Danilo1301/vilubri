@@ -1,3 +1,4 @@
 [X] commit: "added footer"
 [X] remove shadow
-[-] put .txt files in .data
+[X] put .txt files in .data
+[X] change date/number bg color
