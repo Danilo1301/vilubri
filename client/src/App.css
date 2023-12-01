@@ -3,6 +3,14 @@
     background-image: url("/public/background.png");
 }
 
+html, body, #root {
+    height: 100%;
+}
+
+.main-container {
+    height: 100%;
+}
+
 .item-title {
     color: black;
     font-weight: bold;
@@ -46,7 +54,7 @@
     background-color: #ff6969;
     border-radius: 20px;
     color: #ffffff;
-    border: solid 2px #ffffff;
+    border: solid 2px #000000;
 }
 
 .nav-date {

@@ -2,3 +2,4 @@
 [X] remove shadow
 [X] put .txt files in .data
 [X] change date/number bg color
+[X] change footer position

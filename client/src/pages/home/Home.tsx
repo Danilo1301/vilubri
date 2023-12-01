@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { IProduct } from '../../../../src/IProduct'
 import { IPageData } from '../../../../src/IPageData'
 
+//flex-grow-1
+//https://stackoverflow.com/questions/50262517/bootstrap-4-row-fill-remaining-height
+
 function Product({product}: {product: IProduct}) {
     const lines = product.description.split("\n");
 
@@ -45,11 +48,11 @@ function Home() {
         })
     }, [])
 
-    if(!product || !pageData) return <>No product</>
+    if(!product || !pageData) return <>No data</>
 
     return (
-        <div className='container-fluid'>
-            <div className="nav row">
+        <div className='container-fluid main-container d-flex flex-column'>
+           <div className="nav row">
                 <div className='col'>
                     <img className="nav-image p-2" src="logo-vilubri.png" alt="Vilubri"></img>
                 </div>
@@ -65,12 +68,12 @@ function Home() {
                     </div>
                 </div>
             </div>
+           <div className='flex-grow-1'>
             <div className='row row-cols-1 row-cols-sm-2'>
-                <Product product={product}/>
-                <Product product={product}/>
-                <Product product={product}/>
-            </div>
-            <div className="footer row p-2 justify-content-end">
+                    <Product product={product}/>
+                </div>
+           </div>
+           <div className="footer row p-2 justify-content-end">
                 <div className='col-auto'>
                     <div className='footer-number p-2 text-center'>
                         <i className="fa-regular fa-file" style={{marginRight: "10px"}}></i>
