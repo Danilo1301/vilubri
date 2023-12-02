@@ -50,6 +50,7 @@ function Home() {
 
     if(!product || !pageData) return <>No data</>
 
+    /*
     let numOfProducts = 1;
     if(window.screen.width > 500) numOfProducts = 3;
 
@@ -57,8 +58,9 @@ function Home() {
     for (let i = 0; i < numOfProducts; i++) {
         products.push(<Product key={i} product={product}/>);
     }
-
+    
     console.log(`showing ${numOfProducts} products`)
+    */
 
     return (
         <div className='container-fluid main-container d-flex flex-column'>
@@ -78,9 +80,14 @@ function Home() {
                     </div>
                 </div>
             </div>
-           <div className='flex-grow-1'>
+           <div className='row flex-grow-1' style={{overflow: "auto"}}>
             <div className='row row-cols-1 row-cols-sm-2'>
-                {products}
+                <Product product={product}/>
+                <Product product={product}/>
+                <Product product={product}/>
+                <Product product={product}/>
+                <Product product={product}/>
+                <Product product={product}/>
             </div>
            </div>
            <div className="footer row p-2 justify-content-end">
