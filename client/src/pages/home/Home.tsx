@@ -6,7 +6,13 @@ import { IPageData } from '../../../../src/IPageData'
 //https://stackoverflow.com/questions/50262517/bootstrap-4-row-fill-remaining-height
 
 function Product({product}: {product: IProduct}) {
-    const lines = product.description.split("\n");
+    let lines: string[] = product.description.split("\n");
+
+    lines = lines.map(line => {
+        line = line.trim();
+        if(line.length == 0) return "⠀";
+        return line;
+    })
 
     return (
         <>
