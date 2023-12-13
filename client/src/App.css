@@ -1,6 +1,6 @@
 #root {
-    /*background-color: #fffed9;*/
-    background-image: url("/public/background.png");
+    background-color: #eeeeee;
+    /*background-image: url("/public/background.png");*/
 }
 
 html, body, #root {
@@ -9,6 +9,11 @@ html, body, #root {
 
 .main-container {
     height: 100%;
+}
+
+.item-bg {
+    background: #dadada;
+    border-radius: 20px;
 }
 
 .item-title {

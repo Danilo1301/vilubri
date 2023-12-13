@@ -16,15 +16,17 @@ function Product({product}: {product: IProduct}) {
 
     return (
         <>
-            <div className="col p-4">
-                <div className="item-title">{product.title}</div>
-                <div className="row">
-                    <div className="col-auto">
-                        <img className="item-image border" src={product.imageUrl} alt={product.title}/>
-                        <div className="item-price">{product.price}</div>
-                    </div>
-                    <div className="item-description col p-0">
-                        {lines.map((line, i) => <div key={i}>{line}</div>)}
+            <div className="col p-3">
+                <div className="item-bg p-3">
+                    <div className="item-title">{product.title}</div>
+                    <div className="row">
+                        <div className="col-auto">
+                            <img className="item-image border" src={product.imageUrl} alt={product.title}/>
+                            <div className="item-price">{product.price}</div>
+                        </div>
+                        <div className="item-description col p-0">
+                            {lines.map((line, i) => <div key={i}>{line}</div>)}
+                        </div>
                     </div>
                 </div>
             </div>
