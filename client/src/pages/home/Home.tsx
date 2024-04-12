@@ -71,10 +71,10 @@ function Home() {
     */
 
     // page width for #test
-    let pageStyle: any = {};
-    
+    let pageStyle: React.CSSProperties = {};
+
     if(window.location.href.includes("#test"))
-        pageStyle["maxWidth"] = 1000;
+        pageStyle.maxWidth = 1000;
 
     return (
         <div className='container-fluid main-container d-flex flex-column' style={pageStyle}>
