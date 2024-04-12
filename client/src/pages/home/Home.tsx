@@ -70,8 +70,14 @@ function Home() {
     console.log(`showing ${numOfProducts} products`)
     */
 
+    // page width for #test
+    let pageStyle: any = {};
+    
+    if(window.location.href.includes("#test"))
+        pageStyle["maxWidth"] = 1000;
+
     return (
-        <div className='container-fluid main-container d-flex flex-column'>
+        <div className='container-fluid main-container d-flex flex-column' style={pageStyle}>
            <div className="nav row">
                 <div className='col'>
                     <img className="nav-image p-2" src="logo-vilubri.png" alt="Vilubri"></img>
