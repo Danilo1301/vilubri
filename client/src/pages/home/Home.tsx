@@ -3,11 +3,14 @@ import React, { useEffect, useState } from 'react';
 function ProductPage() {
     return (
         <div className='container'>
-            <div>
+            <div className='mb-3'>
                 <a href="/productPage">Product Page</a>
             </div>
-            <div>
+            <div className='mb-3'>
                 <a href="/chamadas">Chamadas</a>
+            </div>
+            <div>
+                <a href="/database">Database</a>
             </div>
         </div>
     );

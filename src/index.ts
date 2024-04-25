@@ -12,15 +12,19 @@ import { IChamadaCreatePost } from './IChamadaCreatePost';
 import { IProductRemovePost } from './IProductRemovePost';
 import { ChamadaJSON } from './ChamadaJSON';
 
+import { createExtractorFromFile } from 'node-unrar-js'
+
 require("./env")("./.data/env.json");
 
 const port = 3000;
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 const bodyParser = require('body-parser');
+//const archiver = require('archiver');
 
 const PATH_PRODUCT = ".data/product/";
 const PATH_PAGEDATA = ".data/pageData/";
+const PATH_PRODUCTIMAGES = ".data/productImages/";
 
 const PATH_TITLE = PATH_PRODUCT + "/title.txt";
 const PATH_DESCRIPTION = PATH_PRODUCT + "/description.txt";
@@ -78,6 +82,7 @@ function setupDataFiles()
 {
   if(!fs.existsSync(PATH_PRODUCT)) fs.mkdirSync(PATH_PRODUCT);
   if(!fs.existsSync(PATH_PAGEDATA)) fs.mkdirSync(PATH_PAGEDATA);
+  if(!fs.existsSync(PATH_PRODUCTIMAGES)) fs.mkdirSync(PATH_PRODUCTIMAGES);
 
   if(!fs.existsSync(PATH_TITLE)) fs.writeFileSync(PATH_TITLE, 'Bico de Abastecimento Auto Ponteira Curta 3/4"NPT c/Medidor Digital');
   if(!fs.existsSync(PATH_DESCRIPTION)) fs.writeFileSync(PATH_DESCRIPTION, "Product description");
@@ -103,6 +108,8 @@ function setupExpress()
   app.use(express.static(path.join(__dirname, '..', '/public', '/client')));
 
   app.use(express.static(path.join(__dirname, '..', '/.data', '/product')));
+
+  app.use(express.static(path.join(__dirname, '..', '/.data', '/productImages')));
   
   app.get("*", (req, res) => res.sendFile(path.join(__dirname, '..', '/public', '/client', "index.html")));
   
@@ -212,8 +219,6 @@ function setupAPI()
     res.json({});
   });
 
-  // Configuramos o upload como um middleware que
-  // espera um arquivo cujo a chave é "foto"
   app.post('/api/chamadas/:id/products/new', upload.single('file'), (req, res) => {
     const id = req.params.id;
 
@@ -248,7 +253,7 @@ function setupAPI()
     if(req.file)
     {
       const imageName = `${code}.png`;
-      const newImagePath = `./public/products/${imageName}`;
+      const newImagePath = `${PATH_PRODUCTIMAGES}/${imageName}`;
       const oldFilePath = `./uploads/${req.file.filename}`
 
       if(fs.existsSync(newImagePath))
@@ -266,6 +271,83 @@ function setupAPI()
 
     res.json({ code });
   });
+
+  app.post('/api/database/uploadImages', upload.single('file'), async (req, res) => {
+    const key: string = req.body.key;
+
+    if(!authorizeKey(key))
+    {
+      res.status(500).send({ error: "Wrong authentication key" });
+      return;
+    }
+
+    console.log(req.body)
+    console.log(req.file)
+
+    if(req.file)
+    {
+      const oldFilePath = `./uploads/${req.file.filename}`
+      const newRarPath = `./uploads/${req.file.filename}.rar`;
+
+      console.log(`'${oldFilePath}' renaming to '${newRarPath}'`)
+
+      fs.renameSync(oldFilePath, newRarPath);
+
+      const extractDestination = `./extractedFiles/`;
+
+      //fs.mkdirSync(extractDestination);
+
+      console.log(`Extracting files...`);
+
+      await extractRarArchive(newRarPath, extractDestination)
+
+      console.log(`Deleting old images...`);
+    
+      let files = fs.readdirSync(PATH_PRODUCTIMAGES);
+      console.log(files)
+      for(const file of files)
+      {
+        fs.unlinkSync(PATH_PRODUCTIMAGES + "/" + file);
+      }
+
+      console.log(`Moving new images...`);
+
+      files = fs.readdirSync(extractDestination);
+      console.log(files)
+      for(const file of files)
+      {
+        fs.renameSync(extractDestination + "/" + file, PATH_PRODUCTIMAGES + "/" + file);
+      }
+
+      console.log(`Removing unused files...`);
+
+      console.log(`Deleting '${newRarPath}'`);
+      fs.unlinkSync(newRarPath);
+    }
+
+    res.json({});
+  });
+
+  app.get('/api/database/downloadImages', (req, res) => {
+    const file = "./uploads/images.rar";
+    res.download(file);
+  });
+}
+
+async function extractRarArchive(file: any, destination: string) {
+  try {
+    // Create the extractor with the file information (returns a promise)
+    const extractor = await createExtractorFromFile({
+      filepath: file,
+      targetPath: destination
+    });
+
+    // Extract the files
+    [...extractor.extract().files];
+  } catch (err) {
+    // May throw UnrarError, see docs
+    console.error(err);
+  }
 }
 
 function authorizeKey(key: string)

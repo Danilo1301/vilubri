@@ -60,10 +60,10 @@ function ProductItem({product}: { product: ProductJSON })
         return line;
     })
 
-    const productImage = `/products/${product.code}.png`;
+    const productImage = `/${product.code}.png`;
 
     return (
-        <div className="row p-3" style={{width: "450px"}}>  
+        <div className="row pt-3 pb-3" style={{}}>  
             <div className="col">
                 <div className="col">
                     <div className="item-bg p-3">
@@ -121,13 +121,13 @@ function ChamadaPage() {
                 Data: {dateToISOString(new Date(chamada.date))}
             </div>
 
+            <a className='btn btn-primary mt-4 mb-4' href={newProductUrl}>Adicionar produto</a>
+
             <div>
                 {chamada.products.length} products
             </div>
 
-            <a className='btn btn-primary mt-4 mb-4' href={newProductUrl}>Adicionar produto</a>
-
-            <div className="container">
+            <div className="">
                 {chamada.products.map((product, i) => <ProductItem key={i} product={product}></ProductItem>)}
             </div>
         </div>
