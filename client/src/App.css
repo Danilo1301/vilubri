@@ -3,9 +3,11 @@
     /*background-image: url("/public/background.png");*/
 }
 
+/*
 html, body, #root {
     height: 100%;
 }
+*/
 
 .main-container {
     height: 100%;
