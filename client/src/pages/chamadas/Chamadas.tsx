@@ -3,9 +3,20 @@ import { ChamadaJSON_HomeList } from '../../../../src/ChamadaJSON_HomeList'
 
 function ChamadaItem({chamada}: { chamada: ChamadaJSON_HomeList }) {
     const url = `/chamadas/${chamada.id}`;
+
+    const date = new Date(chamada.date);
+    const dateStr = date.toLocaleDateString("pt-BR");
+
     return (
-        <div>
-            <a href={url}>Chamada {chamada.id}</a>
+        <div className="container">
+            <div className="row">
+                <div className="col-auto">
+                    {dateStr}
+                </div>
+                <div className="col">
+                <a href={url}>Chamada {chamada.id}</a>
+                </div>
+            </div>
         </div>
     )
 }
@@ -31,7 +42,7 @@ function Chamadas() {
 
             <a className='btn btn-primary mt-4 mb-4' href="/chamadas/new">Criar chamada</a>
 
-            { chamadas.map(chamada => <ChamadaItem key={chamada.id} chamada={chamada}></ChamadaItem>) }
+            { chamadas.sort((a, b) => b.date - a.date).map(chamada => <ChamadaItem key={chamada.id} chamada={chamada}></ChamadaItem>) }
         </div>
     );
 }

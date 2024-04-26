@@ -8,6 +8,7 @@ import ChamadaPage from './pages/chamada/ChamadaPage';
 import NewChamada from './pages/newChamada/NewChamada';
 import NewProduct from './pages/newProduct/NewProduct';
 import Database from './pages/database/Database';
+import SearchProducts from './pages/searchProducts/SearchProducts';
 
 function App() {
   return (
@@ -20,6 +21,9 @@ function App() {
         <Route path="/chamadas/:id" element={<ChamadaPage/>} />
         <Route path="/chamadas/:id/product/new" element={<NewProduct/>} />
         <Route path="/database" element={<Database/>} />
+        <Route path="/searchProducts" element={<SearchProducts/>} />
+
+        
     
         {/*<Route path="*" element={<NoPage />} />*/}
       </Routes>

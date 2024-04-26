@@ -1,3 +1,4 @@
+import { Chamada } from "./Chamada";
 import { ProductJSON } from "./ProductJSON";
 
 export class Product {
@@ -5,7 +6,8 @@ export class Product {
     public code: string;
     public description: string;
     public price: string;
-    public image: string = "";
+
+    public chamada?: Chamada;
 
     constructor(name: string, code: string, description: string, price: string)
     {
@@ -22,8 +24,7 @@ export class Product {
             code: this.code,
             description: this.description,
             price: this.price,
-            image: this.image,
-            index: 0
+            index: this.chamada?.products.indexOf(this) || 0
         }
 
         return json;

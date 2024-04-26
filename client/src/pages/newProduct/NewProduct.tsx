@@ -92,12 +92,12 @@ function NewProduct() {
 
                 <div className=''>
                     <span>Código:</span>
-                    <input type="number" name="code" className="form-control" placeholder="Código" onChange={e => setCode(e.target.value)} value={code}></input>
+                    <input type="number" name="code" className="form-control" placeholder="" onChange={e => setCode(e.target.value)} value={code}></input>
                 </div>
 
                 <div className=''>
                     <span>Nome:</span>
-                    <input type="text" name="name" className="form-control" placeholder="Nome" onChange={e => setName(e.target.value)} value={name}></input>
+                    <input type="text" name="product_name" className="form-control" placeholder="" onChange={e => setName(e.target.value)} value={name}></input>
                 </div>
 
                 <div className=''>

@@ -3,6 +3,5 @@ export interface ProductJSON {
     code: string;
     description: string;
     price: string;
-    image: string;
     index: number;
 }

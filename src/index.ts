@@ -13,6 +13,7 @@ import { IProductRemovePost } from './IProductRemovePost';
 import { ChamadaJSON } from './ChamadaJSON';
 
 import { createExtractorFromFile } from 'node-unrar-js'
+import { ProductJSON_Search } from './ProductJSON_Search';
 
 require("./env")("./.data/env.json");
 
@@ -20,11 +21,12 @@ const port = 3000;
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 const bodyParser = require('body-parser');
-//const archiver = require('archiver');
+const archiver = require('archiver');
 
 const PATH_PRODUCT = ".data/product/";
 const PATH_PAGEDATA = ".data/pageData/";
 const PATH_PRODUCTIMAGES = ".data/productImages/";
+const PATH_CHAMADAS_FILE = ".data/chamadas.json";
 
 const PATH_TITLE = PATH_PRODUCT + "/title.txt";
 const PATH_DESCRIPTION = PATH_PRODUCT + "/description.txt";
@@ -61,14 +63,57 @@ function getChamadaHomeList()
   return items;
 }
 
+function saveData()
+{
+  const data: {[key: string]: ChamadaJSON} = {};
+
+  for(const chamada of chamadas.values())
+  {
+    const chamadaJson = chamada.toJSON();
+    data[chamada.id] = chamadaJson;
+  } 
+
+  fs.writeFileSync(PATH_CHAMADAS_FILE, JSON.stringify(data));
+
+  console.log("Saving data:", data);
+}
+
+function loadData()
+{
+  if(!fs.existsSync(PATH_CHAMADAS_FILE)) return;
+
+  const data: {[key: string]: ChamadaJSON} = JSON.parse(fs.readFileSync(PATH_CHAMADAS_FILE, "utf-8"));
+
+  for(const id in data)
+  {
+    const chamada = createChamada(id);
+    chamada.date = new Date(data[id].date);
+
+    for(const prouctJson of data[id].products)
+    {
+      const product = new Product(prouctJson.name, prouctJson.code, prouctJson.description, prouctJson.price);
+      chamada.addProduct(product);
+    }
+
+    console.log(chamada)
+  }
+
+}
+
 function main()
 {
   setupDataFiles();
   setupExpress();
 
-  const chamada153 = createChamada("153 (2)");
+  loadData();
+
+  /*
+  const chamada153 = createChamada("5 (2)");
   chamada153.products.push(new Product("Produto 1", "0001-test", "Descrição 1", "R$ 5,00"));
-  chamada153.products.push(new Product("Produto 2", "0002-test", "Descrição 2", "R$ 3,59"));
+  chamada153.products.push(new Product("Produto 2", "0002-test", "Descrição 2", "R$ 3,59")); 
+  */
+
+  saveData();
 
   console.log(getChamadaHomeList());
 }
@@ -154,6 +199,8 @@ function setupAPI()
   app.post('/api/chamadas/new', (req, res) => {
     const body: IChamadaCreatePost = req.body;
     
+    console.log(body);
+
     if(!authorizeKey(body.key))
     {
       res.status(500).send({ error: "Wrong authentication key" });
@@ -169,7 +216,34 @@ function setupAPI()
     const chamada = createChamada(body.id);
     chamada.date = new Date(body.date);
 
+    saveData();
+
+    res.json({});
+  });
+
+  app.post('/api/chamadas/:id/delete', (req, res) => {
+    const id = req.params.id;
+    const body: IChamadaCreatePost = req.body;
+    
     console.log(body);
+
+    const chamada = chamadas.get(id);
+
+    if(!chamada)
+    {
+      res.status(500).send({ error: "Could not find chamada ID " + id });
+      return;
+    }
+
+    if(!authorizeKey(body.key))
+    {
+      res.status(500).send({ error: "Wrong authentication key" });
+      return;
+    }
+
+    chamadas.delete(id);
+
+    saveData();
 
     res.json({});
   });
@@ -216,6 +290,8 @@ function setupAPI()
 
     chamada.products.splice(productIndex, 1);
 
+    saveData();
+
     res.json({});
   });
 
@@ -239,13 +315,15 @@ function setupAPI()
     }
 
     const code: string = req.body.code;
-    const name: string = req.body.name;
+    const name: string = req.body.product_name;
     const description: string = req.body.description;
     const price: string = req.body.price;
 
     const product = new Product(name, code, description, price);
 
-    chamada.products.push(product);
+    chamada.addProduct(product);
+
+    saveData();
 
     console.log(req.body)
     console.log('file:', req.file)
@@ -328,9 +406,122 @@ function setupAPI()
     res.json({});
   });
 
-  app.get('/api/database/downloadImages', (req, res) => {
-    const file = "./uploads/images.rar";
-    res.download(file);
+  app.get('/api/database/downloadImages', async (req, res) => {
+    
+    const zipPath = "./uploads/images.zip";
+    
+    await zipDirectory(PATH_PRODUCTIMAGES, zipPath);
+
+    console.log(`Zipping images...`);
+
+    res.download(zipPath, (err) => {
+      //console.log("error?", err)
+
+      fs.unlinkSync(zipPath);
+    });
+  });
+
+  app.post('/api/database/uploadChamadas', upload.single('file'), async (req, res) => {
+    const key: string = req.body.key;
+
+    if(!authorizeKey(key))
+    {
+      res.status(500).send({ error: "Wrong authentication key" });
+      return;
+    }
+
+    console.log(req.body)
+    console.log(req.file)
+
+    if(req.file)
+    {
+      console.log(req.file.filename)
+
+      if(fs.existsSync(PATH_CHAMADAS_FILE)) fs.unlinkSync(PATH_CHAMADAS_FILE);
+
+      const uploadedChamadaFile = `./uploads/${req.file.filename}`;
+
+      fs.renameSync(uploadedChamadaFile, PATH_CHAMADAS_FILE);
+
+      chamadas.clear();
+
+      loadData();
+    }
+
+    res.json({});
+  });
+
+  app.get('/api/database/downloadChamadas', async (req, res) => {
+    res.download(PATH_CHAMADAS_FILE);
+  });
+
+  app.post('/api/searchProducts', upload.single('file'), (req, res) => {
+    const time: number = parseInt(req.body.time);
+    const measure: string = req.body.measure;
+    
+    let timeSpan = time;
+    switch(measure)
+    {
+      case 'dias':
+        timeSpan *= 1000 * 60 * 60 * 24;
+        break;
+      case 'meses':
+        timeSpan *= 1000 * 60 * 60 * 24 * 30;
+        break;
+    }
+
+    const now = new Date();
+    const minTime = new Date(now.getTime() - timeSpan);
+
+    //const products: Product[] = [];
+    const json: ProductJSON_Search[] = [];
+
+    for(const chamada of chamadas.values())
+    {
+      if(chamada.date.getTime() > minTime.getTime())
+      {
+        for(const product of chamada.products)
+        {
+          const productJson: ProductJSON_Search = {
+            product: product.toJSON(),
+            date: chamada.date.getTime()
+          }
+
+          console.log(`Found ${product.code} ${chamada.date.toISOString()}`)
+          
+          const REPLACE_OLD_CODES = true;
+          let replaceIndex = -1;
+
+          for(const findProductJson of json)
+          {
+            if(findProductJson.product.code == product.code) 
+            {
+              console.log("Found duplicate")
+
+              if(chamada.date.getTime() > findProductJson.date)
+              {
+                replaceIndex = json.indexOf(findProductJson);
+              }
+            }
+          }
+
+          if(REPLACE_OLD_CODES && replaceIndex != -1)
+          {
+            console.log(`Replacing ${replaceIndex}`)
+
+            json.splice(replaceIndex, 1);
+          }
+
+          json.push(productJson);
+        }
+      }
+    }
+
+    //console.log(req.body);
+    //console.log(time, measure, timeSpan);
+    //console.log(json);
+
+    res.json(json);
   });
 }
 
@@ -348,6 +539,28 @@ async function extractRarArchive(file: any, destination: string) {
     // May throw UnrarError, see docs
     console.error(err);
   }
+}
+
+function zipDirectory(sourceDir: string, outPath: string) {
+  if(fs.existsSync(outPath))
+  {
+    console.log(`File already exists! Deleting .zip '${outPath}'`);
+    fs.unlinkSync(outPath);
+  }
+
+  const archive = archiver('zip', { zlib: { level: 9 }});
+  const stream = fs.createWriteStream(outPath);
+
+  return new Promise<void>((resolve, reject) => {
+    archive
+      .directory(sourceDir, false)
+      .on('error', (err: any) => reject(err))
+      .pipe(stream)
+    ;
+
+    stream.on('close', () => resolve());
+    archive.finalize();
+  });
 }
 
 function authorizeKey(key: string)

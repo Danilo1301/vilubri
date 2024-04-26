@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, createContext, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { ChamadaJSON } from '../../../../src/ChamadaJSON'
 import { dateToISOString } from '../newChamada/NewChamada';
 import { ProductJSON } from '../../../../src/ProductJSON';
 import { requestAuthKey } from '../home/Home';
 import { IProductRemovePost } from '../../../../src/IProductRemovePost'
+import { IChamadaDeletePost } from '../../../../src/IChamadaDeletePost'
+
+const CheckboxContext = createContext(false);
 
 const getChamada = async (id: string) => {
     return new Promise<ChamadaJSON>((resolve, reject) =>
@@ -52,18 +55,25 @@ function ProductItem({product}: { product: ProductJSON })
         });
     }
 
+    //lines description
     let lines: string[] = product.description.split("\n");
-
     lines = lines.map(line => {
         line = line.trim();
         if(line.length == 0) return "⠀";
         return line;
     })
 
+    //image
     const productImage = `/${product.code}.png`;
 
+    //style
+    const useSmallProduct = useContext(CheckboxContext);
+
+    const style: React.CSSProperties = {};
+    if(useSmallProduct) style.maxWidth = "450px";
+
     return (
-        <div className="row pt-3 pb-3" style={{}}>  
+        <div className="row pt-3 pb-3" style={style}>  
             <div className="col">
                 <div className="col">
                     <div className="item-bg p-3">
@@ -96,6 +106,38 @@ function ChamadaPage() {
     
     const [chamada, setChamada] = React.useState<ChamadaJSON>();
 
+    const [isSmallProductChecked, setIsSmallProductChecked] = useState(false);
+
+    const deleteChamada = () => {
+        const key = requestAuthKey();
+
+        const body: IChamadaDeletePost = {
+            key: key
+        }
+    
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        };
+    
+        console.log('/delete', requestOptions)
+
+        fetch('/api/chamadas/' + globalChamadaId + "/delete", requestOptions)
+        .then(response => {
+            response.json().then(data => {
+                if(response.ok)
+                {
+                    console.log(data);
+    
+                    window.location.href = "/chamadas"
+                    return;
+                }
+                alert(data.error)
+            })
+        })
+    }
+
     React.useEffect(() => {
         getChamada(id).then(data => {
             console.log(data);
@@ -108,27 +150,71 @@ function ChamadaPage() {
 
     const newProductUrl = `/chamadas/${id}/product/new`;
 
-    return (
-        <div className='container'>
-            <a href="/chamadas">Voltar</a>
+    const date = new Date(chamada.date);
+    const dateStr = date.toLocaleDateString("pt-BR");
+    const timeStr = date.toLocaleTimeString();
 
+    const dateTopOptions: Intl.DateTimeFormatOptions = { year: '2-digit', month: 'numeric', day: 'numeric' };
+    const dateTopStr = date.toLocaleDateString("pt-BR", dateTopOptions);
+
+    return (
+        <div className='container-fluid'>
+            <div className="nav row">
+                <div className='col'>
+                    <img className="nav-image p-2" src="/logo-vilubri.png" alt="Vilubri"></img>
+                </div>
+                <div className='col align-self-center'>
+                    <div className='nav-alert p-2 text-center'>
+                        {'Alert message'}
+                    </div>
+                </div>
+                <div className='col-auto align-self-center'>
+                    <div className='nav-date p-2 text-center'>
+                        <i className="fa-regular fa-calendar" style={{marginRight: "10px"}}></i>
+                        <span>{dateTopStr}</span>
+                    </div>
+                </div>
+            </div>
+
+            <a href="/chamadas">Voltar</a>
+            
             <div>Chamada {id}</div>
 
             <div>
                 ID: {chamada.id}
             </div>
             <div>
-                Data: {dateToISOString(new Date(chamada.date))}
+                Data: {dateStr} | {timeStr}
             </div>
 
             <a className='btn btn-primary mt-4 mb-4' href={newProductUrl}>Adicionar produto</a>
+
+            <div className="form-check">
+                <input className="form-check-input" type="checkbox" value="" checked={isSmallProductChecked} onChange={e => setIsSmallProductChecked(!isSmallProductChecked)}></input>
+                <label className="form-check-label">
+                    Mostrar em tamanho pequeno
+                </label>
+            </div>
 
             <div>
                 {chamada.products.length} products
             </div>
 
-            <div className="">
-                {chamada.products.map((product, i) => <ProductItem key={i} product={product}></ProductItem>)}
+            <CheckboxContext.Provider value={isSmallProductChecked}>
+                <div className="">
+                    {chamada.products.map((product, i) => <ProductItem key={i} product={product}></ProductItem>)}
+                </div>
+            </CheckboxContext.Provider>
+
+            <button type="button" className="btn btn-danger mt-4" onClick={deleteChamada}>Deletar chamada</button>
+
+            <div className="footer row p-2 justify-content-end">
+                <div className='col-auto'>
+                    <div className='footer-number p-2 text-center'>
+                        <i className="fa-regular fa-file" style={{marginRight: "10px"}}></i>
+                        <span>{id}</span>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -23,12 +23,16 @@ export class Chamada {
 
         for(const product of this.products)
         {
-            const productJson = product.toJSON();
-            productJson.index = this.products.indexOf(product);
-            
-            json.products.push(productJson);
+            json.products.push(product.toJSON());
         }
 
         return json;
+    }
+
+    public addProduct(product: Product)
+    {
+        product.chamada = this;
+
+        this.products.push(product);
     }
 }

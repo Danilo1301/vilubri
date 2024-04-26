@@ -6,15 +6,21 @@ import { requestAuthKey } from '../home/Home';
 function NewChamada() {
     const [id, setID] = React.useState("");
     const [date, setDate] = React.useState(dateToISOString(new Date()));
+    const [time, setTime] = React.useState("12:00");
 
     const handleCreate = () => {
         console.log("create")
     
         const key = requestAuthKey();
 
+        const timeString = `${date} ${time}:00`;
+        const dateTime = new Date(timeString).getTime();
+
+        console.log(timeString, dateTime);
+
         const chamada: IChamadaCreatePost = {
             id: id,
-            date: date,
+            date: dateTime,
             key: key
         }
     
@@ -61,6 +67,16 @@ function NewChamada() {
                     setDate(str);
                 }} value={date}> 
                 </input>
+            </div>
+
+            <div className="">
+                <input type="time" className="form-control" value={time} onChange={e => {
+                    const str = e.target.value;
+                    
+                    console.log(str)
+
+                    setTime(str);
+                }}/>
             </div>
 
             <a className='btn btn-primary mt-4 mb-4' onClick={handleCreate}>Criar</a>

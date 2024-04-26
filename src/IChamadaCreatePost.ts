@@ -1,5 +1,5 @@
 export interface IChamadaCreatePost {
     id: string;
-    date: string;
+    date: number;
     key: string;
 }

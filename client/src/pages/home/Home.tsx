@@ -4,13 +4,16 @@ function ProductPage() {
     return (
         <div className='container'>
             <div className='mb-3'>
+                <a href="/chamadas">Chamadas</a>
+            </div>
+            <div className='mb-3'>
                 <a href="/productPage">Product Page</a>
             </div>
             <div className='mb-3'>
-                <a href="/chamadas">Chamadas</a>
+                <a href="/database">Database</a>
             </div>
             <div>
-                <a href="/database">Database</a>
+                <a href="/searchProducts">Procurar produtos</a>
             </div>
         </div>
     );
