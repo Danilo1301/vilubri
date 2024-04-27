@@ -15,15 +15,11 @@ function NewProduct() {
     const [description, setDescription] = React.useState("");
     const [price, setPrice] = React.useState("R$ 0,00");
 
-    const [product, setProduct] = React.useState<ProductJSON>();
-
     React.useEffect(() => {
         fetch(`/api/chamadas/${id}/products/${productIndex}`)
         .then(response => response.json())
         .then((data: ProductJSON) => {
             console.log(data)
-
-            setProduct(data);
 
             setCode(data.code);
             setName(data.name);

@@ -201,6 +201,7 @@ function setupAPI()
     const id: string = req.body.id;
     const key: string = req.body.key;
     const date: number = req.body.date;
+    const otherChamadaId: string = req.body.otherChamadaId;
 
     console.log(req.url)
     console.log("body:", req.body);
@@ -217,10 +218,32 @@ function setupAPI()
       return;
     }
 
+    if(otherChamadaId.length > 0)
+    {
+      if(!chamadas.has(otherChamadaId))
+      {
+        res.status(500).send({ error: "Chamada ID " + otherChamadaId + " not found. Can not copy products" });
+        return;
+      }
+    }
+
     const chamada = createChamada(id);
     chamada.date = new Date(date);
 
+    if(otherChamadaId.length > 0)
+    {
+      const otherChamada = chamadas.get(otherChamadaId)!;
+
+      for(const product of otherChamada.products)
+      {
+        const newProduct = new Product(product.name, product.code, product.description, product.price);
+        chamada.products.push(newProduct);
+      }
+    }
+
     saveData();
+
+    console.log(chamada.toJSON());
 
     res.json(chamada.toJSON());
   });

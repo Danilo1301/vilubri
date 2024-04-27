@@ -5,6 +5,8 @@ function NewChamada() {
     const [id, setID] = React.useState("");
     const [date, setDate] = React.useState(dateToISOString(new Date()));
     const [time, setTime] = React.useState("12:00");
+    const [copyFromAnotherChamada, setCopyFromAnotherChamada] = React.useState(false);
+    const [otherChamadaID, setOtherChamadaID] = React.useState("");
 
     const handleCreate = () => {
         console.log("create")
@@ -19,7 +21,8 @@ function NewChamada() {
         const body: any = {
             id: id,
             date: dateTime,
-            key: key
+            key: key,
+            otherChamadaId: otherChamadaID
         }
     
         const requestOptions = {
@@ -76,6 +79,22 @@ function NewChamada() {
                     setTime(str);
                 }}/>
             </div>
+
+            <div className="form-check">
+                <input className="form-check-input" type="checkbox" value="" checked={copyFromAnotherChamada} onChange={e => setCopyFromAnotherChamada(!copyFromAnotherChamada)}></input>
+                <label className="form-check-label">
+                    Copiar produtos de outra chamada
+                </label>
+            </div>
+
+            
+
+            {copyFromAnotherChamada ?
+            <>
+                <div className=''>
+                    <input type="text" className="form-control" placeholder="ID da chamada" onChange={e => setOtherChamadaID(e.target.value)} value={otherChamadaID}></input>
+                </div>
+            </> : <></>}
 
             <a className='btn btn-primary mt-4 mb-4' onClick={handleCreate}>Criar</a>
         </div>
