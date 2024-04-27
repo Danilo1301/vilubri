@@ -8,8 +8,6 @@ import { IPageData } from './IPageData';
 import { Chamada } from './Chamada';
 import { Product } from './Product';
 import { ChamadaJSON_HomeList } from './ChamadaJSON_HomeList';
-import { IChamadaCreatePost } from './IChamadaCreatePost';
-import { IProductRemovePost } from './IProductRemovePost';
 import { ChamadaJSON } from './ChamadaJSON';
 
 import { createExtractorFromFile } from 'node-unrar-js'
@@ -65,6 +63,8 @@ function getChamadaHomeList()
 
 function saveData()
 {
+  console.log("Saving data");
+
   const data: {[key: string]: ChamadaJSON} = {};
 
   for(const chamada of chamadas.values())
@@ -74,12 +74,12 @@ function saveData()
   } 
 
   fs.writeFileSync(PATH_CHAMADAS_FILE, JSON.stringify(data));
-
-  console.log("Saving data:", data);
 }
 
 function loadData()
 {
+  console.log("Loading data");
+
   if(!fs.existsSync(PATH_CHAMADAS_FILE)) return;
 
   const data: {[key: string]: ChamadaJSON} = JSON.parse(fs.readFileSync(PATH_CHAMADAS_FILE, "utf-8"));
@@ -94,8 +94,6 @@ function loadData()
       const product = new Product(prouctJson.name, prouctJson.code, prouctJson.description, prouctJson.price);
       chamada.addProduct(product);
     }
-
-    console.log(chamada)
   }
 
 }
@@ -115,7 +113,7 @@ function main()
 
   saveData();
 
-  console.log(getChamadaHomeList());
+  //console.log(getChamadaHomeList());
 }
 
 function readFile(path: string)
@@ -166,7 +164,10 @@ function setupExpress()
 function setupAPI()
 {
   app.get('/api/test', (req, res) => {
-    res.json({test: "ok"});
+    console.log(`/api/test`);
+    console.log("body:", req.body);
+
+    res.json(req.body);
   })
 
   app.get('/api/product', (req, res) => {
@@ -197,35 +198,39 @@ function setupAPI()
   })
 
   app.post('/api/chamadas/new', (req, res) => {
-    const body: IChamadaCreatePost = req.body;
-    
-    console.log(body);
+    const id: string = req.body.id;
+    const key: string = req.body.key;
+    const date: number = req.body.date;
 
-    if(!authorizeKey(body.key))
+    console.log(req.url)
+    console.log("body:", req.body);
+
+    if(!authorizeKey(key))
     {
       res.status(500).send({ error: "Wrong authentication key" });
       return;
     }
 
-    if(chamadas.has(body.id))
+    if(chamadas.has(id))
     {
       res.status(500).send({ error: "ID already exists" });
       return;
     }
 
-    const chamada = createChamada(body.id);
-    chamada.date = new Date(body.date);
+    const chamada = createChamada(id);
+    chamada.date = new Date(date);
 
     saveData();
 
-    res.json({});
+    res.json(chamada.toJSON());
   });
 
   app.post('/api/chamadas/:id/delete', (req, res) => {
     const id = req.params.id;
-    const body: IChamadaCreatePost = req.body;
+    const key: string = req.body.key;
     
-    console.log(body);
+    console.log(req.url)
+    console.log("body:", req.body);
 
     const chamada = chamadas.get(id);
 
@@ -235,7 +240,7 @@ function setupAPI()
       return;
     }
 
-    if(!authorizeKey(body.key))
+    if(!authorizeKey(key))
     {
       res.status(500).send({ error: "Wrong authentication key" });
       return;
@@ -250,6 +255,10 @@ function setupAPI()
 
   app.get('/api/chamadas/:id', (req, res) => {
     const id = req.params.id;
+
+    console.log(req.url)
+    console.log("body:", req.body);
+
     const chamada = chamadas.get(id);
 
     if(!chamada)
@@ -262,13 +271,14 @@ function setupAPI()
   })
 
   app.post('/api/chamadas/:id/products/:productIndex/remove', (req, res) => {
-    const body: IProductRemovePost = req.body;
     const id = req.params.id;
     const productIndex: number = parseInt(req.params.productIndex);
+    const key: string = req.body.key;
 
-    console.log(id, productIndex)
+    console.log(req.url)
+    console.log("body:", req.body);
 
-    if(!authorizeKey(body.key))
+    if(!authorizeKey(key))
     {
       res.status(500).send({ error: "Wrong authentication key" });
       return;
@@ -297,6 +307,10 @@ function setupAPI()
 
   app.post('/api/chamadas/:id/products/new', upload.single('file'), (req, res) => {
     const id = req.params.id;
+    const key: string = req.body.key;
+
+    console.log(req.url)
+    console.log("body:", req.body);
 
     const chamada = chamadas.get(id);
 
@@ -305,8 +319,6 @@ function setupAPI()
       res.status(500).send({ error: "Could not find chamada " + id });
       return;
     }
-
-    const key: string = req.body.key;
 
     if(!authorizeKey(key))
     {
@@ -345,13 +357,126 @@ function setupAPI()
       fs.renameSync(oldFilePath, newImagePath);
     }
 
-    console.log(code);
+    res.json(product.toJSON());
+  });
 
-    res.json({ code });
+  /*
+  TODO: remove this upload.single part
+  */
+  app.post('/api/chamadas/:id/products/edit', upload.single('file'), (req, res) => {
+    const id = req.params.id;
+
+    console.log(req.url)
+    console.log("body:", req.body);
+
+    const chamada = chamadas.get(id);
+
+    if(!chamada)
+    {
+      res.status(500).send({ error: "Could not find chamada " + id });
+      return;
+    }
+
+    const productIndex = req.body.index;
+
+    if(productIndex < 0 || productIndex >= chamada.products.length)
+    {
+      res.status(500).send({ error: "Could not find product " + productIndex });
+      return;
+    }
+    
+    const key: string = req.body.key;
+    if(!authorizeKey(key))
+    {
+      res.status(500).send({ error: "Wrong authentication key" });
+      return;
+    }
+    
+    const product = chamada.products[productIndex];
+
+    //const code: string = req.body.code;
+    const name: string = req.body.product_name;
+    const description: string = req.body.description;
+    const price: string = req.body.price;
+
+    //product.code = code;
+    product.name = name;
+    product.description = description;
+    product.price = price;
+
+    saveData();
+
+    res.json(req.body);
+  });
+
+  app.get('/api/chamadas/:id/products/:productIndex', (req, res) => {
+    const id = req.params.id;
+    const productIndex: number = parseInt(req.params.productIndex);
+
+    console.log(req.url)
+    console.log("body:", req.body);
+
+    const chamada = chamadas.get(id);
+
+    if(!chamada)
+    {
+      res.status(500).send({ error: "Could not find chamada " + id });
+      return;
+    }
+
+    if(productIndex >= chamada.products.length)
+    {
+      res.status(500).send({ error: "Could not find product " + productIndex });
+      return;
+    }
+
+    const product = chamada.products[productIndex];
+
+    res.json(product.toJSON());
+  });
+
+  app.post('/api/chamadas/:id/products/:productIndex/changeIndex', (req, res) => {
+    const id = req.params.id;
+    const productIndex = parseInt(req.params.productIndex);
+    const key: string = req.body.key;
+    const newIndex: number = parseInt(req.body.newIndex);
+
+    console.log(req.url)
+    console.log("body:", req.body);
+
+    const chamada = chamadas.get(id);
+
+    if(!chamada)
+    {
+      res.status(500).send({ error: "Could not find chamada " + id });
+      return;
+    }
+
+    if(productIndex < 0 || productIndex >= chamada.products.length)
+    {
+      res.status(500).send({ error: "Could not find product " + productIndex });
+      return;
+    }
+    
+    if(!authorizeKey(key))
+    {
+      res.status(500).send({ error: "Wrong authentication key" });
+      return;
+    }
+
+    const product = chamada.products[productIndex];
+
+    chamada.products.splice(productIndex, 1);
+    chamada.products.splice(newIndex, 0, product);
+
+    res.json(req.body);
   });
 
   app.post('/api/database/uploadImages', upload.single('file'), async (req, res) => {
     const key: string = req.body.key;
+
+    console.log(req.url)
+    console.log("body:", req.body);
 
     if(!authorizeKey(key))
     {
@@ -359,7 +484,6 @@ function setupAPI()
       return;
     }
 
-    console.log(req.body)
     console.log(req.file)
 
     if(req.file)
@@ -407,9 +531,11 @@ function setupAPI()
   });
 
   app.get('/api/database/downloadImages', async (req, res) => {
-    
     const zipPath = "./uploads/images.zip";
     
+    console.log(req.url)
+    console.log("body:", req.body);
+
     await zipDirectory(PATH_PRODUCTIMAGES, zipPath);
 
     console.log(`Zipping images...`);
@@ -424,13 +550,15 @@ function setupAPI()
   app.post('/api/database/uploadChamadas', upload.single('file'), async (req, res) => {
     const key: string = req.body.key;
 
+    console.log(req.url)
+    console.log("body:", req.body);
+
     if(!authorizeKey(key))
     {
       res.status(500).send({ error: "Wrong authentication key" });
       return;
     }
 
-    console.log(req.body)
     console.log(req.file)
 
     if(req.file)
@@ -459,6 +587,9 @@ function setupAPI()
     const time: number = parseInt(req.body.time);
     const measure: string = req.body.measure;
     
+    console.log(req.url)
+    console.log("body:", req.body);
+
     let timeSpan = time;
     switch(measure)
     {
@@ -478,7 +609,7 @@ function setupAPI()
 
     for(const chamada of chamadas.values())
     {
-      if(chamada.date.getTime() > minTime.getTime())
+      if(chamada.date.getTime() < minTime.getTime())
       {
         for(const product of chamada.products)
         {

@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { IChamadaCreatePost } from '../../../../src/IChamadaCreatePost'
+import React from 'react';
 import { requestAuthKey } from '../home/Home';
 
 function NewChamada() {
@@ -18,7 +16,7 @@ function NewChamada() {
 
         console.log(timeString, dateTime);
 
-        const chamada: IChamadaCreatePost = {
+        const body: any = {
             id: id,
             date: dateTime,
             key: key
@@ -27,7 +25,7 @@ function NewChamada() {
         const requestOptions = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(chamada)
+          body: JSON.stringify(body)
         };
     
         console.log('/create', requestOptions)

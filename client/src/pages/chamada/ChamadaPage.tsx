@@ -4,8 +4,6 @@ import { ChamadaJSON } from '../../../../src/ChamadaJSON'
 import { dateToISOString } from '../newChamada/NewChamada';
 import { ProductJSON } from '../../../../src/ProductJSON';
 import { requestAuthKey } from '../home/Home';
-import { IProductRemovePost } from '../../../../src/IProductRemovePost'
-import { IChamadaDeletePost } from '../../../../src/IChamadaDeletePost'
 
 const CheckboxContext = createContext(false);
 
@@ -25,10 +23,12 @@ const getChamada = async (id: string) => {
 
 function ProductItem({product}: { product: ProductJSON })
 {
+    const [newIndex, setNewIndex] = React.useState("0");
+
     const handleRemoveProduct = () => {
         const key = requestAuthKey();
 
-        const body: IProductRemovePost = {
+        const body: any = {
             key: key
         }
     
@@ -41,6 +41,37 @@ function ProductItem({product}: { product: ProductJSON })
         console.log('/create', requestOptions)
 
         fetch('/api/chamadas/' + globalChamadaId + '/products/' + product.index + '/remove', requestOptions)
+        .then(response => {
+            response.json().then(data => {
+                if(response.ok)
+                {
+                    console.log(data);
+    
+                    window.location.reload();
+                    return;
+                }
+                alert(data.error)
+            })
+        });
+    }
+
+    const handleChangeIndex = () => {
+        const key = requestAuthKey();
+
+        const body: any = {
+            key: key,
+            newIndex: parseInt(newIndex)
+        }
+    
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        };
+    
+        console.log('requestOptions:', requestOptions)
+
+        fetch('/api/chamadas/' + globalChamadaId + '/products/' + product.index + '/changeIndex', requestOptions)
         .then(response => {
             response.json().then(data => {
                 if(response.ok)
@@ -72,6 +103,9 @@ function ProductItem({product}: { product: ProductJSON })
     const style: React.CSSProperties = {};
     if(useSmallProduct) style.maxWidth = "450px";
 
+    //edit url
+    const editUrl = `/chamadas/${globalChamadaId}/product/${product.index}/edit`;
+
     return (
         <div className="row pt-3 pb-3" style={style}>  
             <div className="col">
@@ -90,7 +124,18 @@ function ProductItem({product}: { product: ProductJSON })
                     </div>
                 </div>
             </div>
-            <button className='mt-4' onClick={handleRemoveProduct}>Remover produto</button>
+            <button className='mt-4' onClick={handleRemoveProduct}>[{product.index}] Remover produto</button>
+            <div className='row'>
+                <div className="col-auto">
+                    <input type="number" name="index" className="form-control" placeholder="Novo index" onChange={e => setNewIndex(e.target.value)} value={newIndex}></input>
+                </div>
+                <div className="col-auto">
+                    <button className='' onClick={handleChangeIndex}>Mudar index</button>
+                </div>
+                <div className="col-auto">
+                    <a href={editUrl}>Editar</a>
+                </div>
+            </div>
         </div>
         
     );
@@ -111,7 +156,7 @@ function ChamadaPage() {
     const deleteChamada = () => {
         const key = requestAuthKey();
 
-        const body: IChamadaDeletePost = {
+        const body: any = {
             key: key
         }
     
@@ -180,9 +225,6 @@ function ChamadaPage() {
             
             <div>Chamada {id}</div>
 
-            <div>
-                ID: {chamada.id}
-            </div>
             <div>
                 Data: {dateStr} | {timeStr}
             </div>

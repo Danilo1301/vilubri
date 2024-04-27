@@ -9,6 +9,7 @@ import NewChamada from './pages/newChamada/NewChamada';
 import NewProduct from './pages/newProduct/NewProduct';
 import Database from './pages/database/Database';
 import SearchProducts from './pages/searchProducts/SearchProducts';
+import EditProduct from './pages/newProduct/EditProduct';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/chamadas/new" element={<NewChamada/>} />
         <Route path="/chamadas/:id" element={<ChamadaPage/>} />
         <Route path="/chamadas/:id/product/new" element={<NewProduct/>} />
+        <Route path="/chamadas/:id/product/:productIndex/edit" element={<EditProduct/>} />
         <Route path="/database" element={<Database/>} />
         <Route path="/searchProducts" element={<SearchProducts/>} />
 
