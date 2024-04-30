@@ -237,7 +237,7 @@ function setupAPI()
       for(const product of otherChamada.products)
       {
         const newProduct = new Product(product.name, product.code, product.description, product.price);
-        chamada.products.push(newProduct);
+        chamada.addProduct(newProduct);
       }
     }
 
