@@ -354,6 +354,12 @@ function setupAPI()
     const description: string = req.body.description;
     const price: string = req.body.price;
 
+    if(chamada.hasProductCode(code))
+    {
+      res.status(500).send({ error: "This code was already added" });
+      return;
+    }
+
     const product = new Product(name, code, description, price);
 
     chamada.addProduct(product);

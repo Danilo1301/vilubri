@@ -35,4 +35,13 @@ export class Chamada {
 
         this.products.push(product);
     }
+
+    public hasProductCode(code: string)
+    {
+        for(const product of this.products)
+        {
+            if(product.code == code) return true;
+        }
+        return false;
+    }
 }

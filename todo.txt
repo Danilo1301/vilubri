@@ -4,3 +4,6 @@
 [X] change date/number bg color
 [X] change footer position
 [X] add overflow
+
+[30/04/24]
+[X] add 'This code was already added to this chamada' error message
