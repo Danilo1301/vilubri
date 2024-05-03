@@ -7,3 +7,7 @@
 
 [30/04/24]
 [X] add 'This code was already added to this chamada' error message
+
+[03/05/24]
+[X] add script to organize codes
+[ ] add status 'NOT COMPLETE' to chamadas
