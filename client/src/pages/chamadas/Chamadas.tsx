@@ -13,9 +13,16 @@ function ChamadaItem({chamada}: { chamada: ChamadaJSON_HomeList }) {
                 <div className="col-auto">
                     {dateStr}
                 </div>
-                <div className="col">
+                <div className="col-auto">
                 <a href={url}>Chamada {chamada.id}</a>
                 </div>
+                {!chamada.completed ?
+                <>
+                    <div className="col-auto">
+                        <span className="badge text-bg-warning">Incompleto</span>
+                    </div>
+                </> : <></>}
+                
             </div>
         </div>
     )

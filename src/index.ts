@@ -52,7 +52,8 @@ function getChamadaHomeList()
     const item: ChamadaJSON_HomeList = {
       id: chamada.id,
       numProducts: chamada.products.length,
-      date: chamada.date.getTime()
+      date: chamada.date.getTime(),
+      completed: chamada.isCompleted
     };
     
     items.push(item);
@@ -88,6 +89,7 @@ function loadData()
   {
     const chamada = createChamada(id);
     chamada.date = new Date(data[id].date);
+    chamada.isCompleted = data[id].completed;
 
     for(const prouctJson of data[id].products)
     {
@@ -240,6 +242,36 @@ function setupAPI()
         chamada.addProduct(newProduct);
       }
     }
+
+    saveData();
+
+    console.log(chamada.toJSON());
+
+    res.json(chamada.toJSON());
+  });
+
+  app.post('/api/chamadas/:id/toggleCompleteStatus', (req, res) => {
+    const id = req.params.id;
+    const key: string = req.body.key;
+
+    console.log(req.url)
+    console.log("body:", req.body);
+
+    if(!authorizeKey(key))
+    {
+      res.status(500).send({ error: "Wrong authentication key" });
+      return;
+    }
+
+    const chamada = chamadas.get(id);
+
+    if(!chamada)
+    {
+      res.status(500).send({ error: "Could not find chamada ID " + id });
+      return;
+    }
+
+    chamada.isCompleted = !chamada.isCompleted;
 
     saveData();
 

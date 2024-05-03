@@ -1,7 +1,6 @@
-import React, { useEffect, useState, createContext, useContext } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { ChamadaJSON } from '../../../../src/ChamadaJSON'
-import { dateToISOString } from '../newChamada/NewChamada';
 import { ProductJSON } from '../../../../src/ProductJSON';
 import { requestAuthKey } from '../home/Home';
 
@@ -90,7 +89,7 @@ function ProductItem({product}: { product: ProductJSON })
     let lines: string[] = product.description.split("\n");
     lines = lines.map(line => {
         line = line.trim();
-        if(line.length == 0) return "⠀";
+        if(line.length === 0) return "⠀";
         return line;
     })
 
@@ -183,13 +182,43 @@ function ChamadaPage() {
         })
     }
 
+    const toggleCompleteStatus = () => {
+        const key = requestAuthKey();
+
+        const body: any = {
+            key: key
+        }
+    
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        };
+    
+        console.log('requestOptions:', requestOptions)
+
+        fetch('/api/chamadas/' + globalChamadaId + '/toggleCompleteStatus', requestOptions)
+        .then(response => {
+            response.json().then(data => {
+                if(response.ok)
+                {
+                    console.log(data);
+    
+                    window.location.reload();
+                    return;
+                }
+                alert(data.error)
+            })
+        });
+    }
+
     React.useEffect(() => {
         getChamada(id).then(data => {
             console.log(data);
 
             setChamada(data);
         })
-    }, [])
+    }, [id])
 
     if(!chamada) return <>No data</>
 
@@ -229,6 +258,20 @@ function ChamadaPage() {
                 Data: {dateStr} | {timeStr}
             </div>
 
+            <div className="row align-items-center">
+                <div className="col-auto">
+                    {chamada.completed ?
+                    <>
+                        <span className="badge text-bg-success">Completo</span>
+                    </> : <>
+                        <span className="badge text-bg-warning">Incompleto</span>
+                    </>}
+                </div>
+                <div className="col-auto">
+                    <button className="btn btn-sm btn-primary pl-2" onClick={toggleCompleteStatus}>Mudar status para {chamada.completed ? "Incompleto" : "Completo"}</button>
+                </div>
+            </div>
+                    
             <a className='btn btn-primary mt-4 mb-4' href={newProductUrl}>Adicionar produto</a>
 
             <div className="form-check">

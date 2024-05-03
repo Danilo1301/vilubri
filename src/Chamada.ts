@@ -6,6 +6,7 @@ export class Chamada {
     public id: string;
     public products: Product[] = [];
     public date: Date;
+    public isCompleted: boolean = false;
 
     constructor(id: string)
     {
@@ -18,7 +19,8 @@ export class Chamada {
         const json: ChamadaJSON = {
             id: this.id,
             products: [],
-            date: this.date.getTime()
+            date: this.date.getTime(),
+            completed: this.isCompleted
         }
 
         for(const product of this.products)
