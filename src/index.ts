@@ -88,16 +88,9 @@ function loadData()
   for(const id in data)
   {
     const chamada = createChamada(id);
-    chamada.date = new Date(data[id].date);
-    chamada.isCompleted = data[id].completed;
 
-    for(const prouctJson of data[id].products)
-    {
-      const product = new Product(prouctJson.name, prouctJson.code, prouctJson.description, prouctJson.price);
-      chamada.addProduct(product);
-    }
+    chamada.loadFromJSON(data[id]);
   }
-
 }
 
 function main()
@@ -230,7 +223,7 @@ function setupAPI()
     }
 
     const chamada = createChamada(id);
-    chamada.date = new Date(date);
+    if(date != -1) chamada.date = new Date(date);
 
     if(otherChamadaId.length > 0)
     {

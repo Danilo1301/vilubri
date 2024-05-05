@@ -228,6 +228,10 @@ function ChamadaPage() {
     const dateStr = date.toLocaleDateString("pt-BR");
     const timeStr = date.toLocaleTimeString();
 
+    const createdDatte = new Date(chamada.createdDate);
+    const createdDateStr = createdDatte.toLocaleDateString("pt-BR");
+    const createdTimeStr = createdDatte.toLocaleTimeString();
+
     const dateTopOptions: Intl.DateTimeFormatOptions = { year: '2-digit', month: 'numeric', day: 'numeric' };
     const dateTopStr = date.toLocaleDateString("pt-BR", dateTopOptions);
 
@@ -256,6 +260,10 @@ function ChamadaPage() {
 
             <div>
                 Data: {dateStr} | {timeStr}
+            </div>
+
+            <div>
+                Data de criação: {createdDateStr} | {createdTimeStr}
             </div>
 
             <div className="row align-items-center">

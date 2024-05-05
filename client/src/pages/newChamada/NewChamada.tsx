@@ -3,6 +3,7 @@ import { requestAuthKey } from '../home/Home';
 
 function NewChamada() {
     const [id, setID] = React.useState("");
+    const [useCustomDate, setUseCustomDate] = React.useState(false);
     const [date, setDate] = React.useState(dateToISOString(new Date()));
     const [time, setTime] = React.useState("12:00");
     const [copyFromAnotherChamada, setCopyFromAnotherChamada] = React.useState(false);
@@ -14,7 +15,9 @@ function NewChamada() {
         const key = requestAuthKey();
 
         const timeString = `${date} ${time}:00`;
-        const dateTime = new Date(timeString).getTime();
+        let dateTime = new Date(timeString).getTime();
+
+        if(!useCustomDate) dateTime = -1;
 
         console.log(timeString, dateTime);
 
@@ -59,25 +62,32 @@ function NewChamada() {
 
             <div className=''>
                 <span>Data:</span>
-                <input type="date" className="form-control" placeholder="Data" onChange={e => {
-                    const str = e.target.value;
-                    const date = new Date(str);
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="" checked={useCustomDate} onChange={e => setUseCustomDate(!useCustomDate)}></input>
+                    <label className="form-check-label">
+                        Definir data e hora personalizada
+                    </label>
+                </div>
 
-                    console.log(str, date.getTime());
+                {useCustomDate && <>
+                    <input type="date" className="form-control" placeholder="Data" onChange={e => {
+                        const str = e.target.value;
+                        const date = new Date(str);
 
-                    setDate(str);
-                }} value={date}> 
-                </input>
-            </div>
+                        console.log(str, date.getTime());
 
-            <div className="">
-                <input type="time" className="form-control" value={time} onChange={e => {
-                    const str = e.target.value;
-                    
-                    console.log(str)
+                        setDate(str);
+                    }} value={date}> 
+                    </input>
 
-                    setTime(str);
-                }}/>
+                    <input type="time" className="form-control" value={time} onChange={e => {
+                        const str = e.target.value;
+                        
+                        console.log(str)
+
+                        setTime(str);
+                    }}/>
+                </>}
             </div>
 
             <div className="form-check">
