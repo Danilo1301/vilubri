@@ -711,6 +711,31 @@ function setupAPI()
 
     res.json(json);
   });
+
+  app.post('/api/searchProductsByCode', upload.single('file'), (req, res) => {
+    const name: string = req.body.name;
+
+    console.log(req.url)
+    console.log("body:", req.body);
+
+    const json: ChamadaJSON[] = [];
+
+    for(const chamada of chamadas.values())
+    {
+      console.log(`Loopíng products for chamada ${chamada.id}...`);
+      for(const product of chamada.products)
+      {
+        if(product.name.toLowerCase().includes(name.toLowerCase()) || product.code.includes(name))
+        {
+          console.log(`Found product ${product.name}`)
+          json.push(chamada.toJSON());
+          break;
+        }
+      }
+    }
+
+    res.json(json);
+  });
 }
 
 async function extractRarArchive(file: any, destination: string) {
