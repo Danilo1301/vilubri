@@ -50,6 +50,7 @@ function NewProduct() {
     const [name, setName] = React.useState("");
     const [description, setDescription] = React.useState("");
     const [price, setPrice] = React.useState("R$ 0,00");
+    const [IPI, setIPI] = React.useState("0,00");
 
     const postUrl = `/api/chamadas/${id}/products/new`;
 
@@ -108,6 +109,11 @@ function NewProduct() {
                 <div className=''>
                     <span>Preço:</span>
                     <input type="text" name="price" className="form-control" placeholder="Preço" onChange={e => setPrice(e.target.value)} value={price}></input>
+                </div>
+
+                <div className=''>
+                    <span>IPI:</span>
+                    <input type="text" name="ipi" className="form-control" placeholder="IPI" onChange={e => setIPI(e.target.value)} value={IPI}></input>
                 </div>
 
                 <div className="form-group">

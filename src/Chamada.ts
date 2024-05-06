@@ -42,7 +42,7 @@ export class Chamada {
     
         for(const productJson of data.products)
         {
-          const product = new Product(productJson.name, productJson.code, productJson.description, productJson.price);
+          const product = new Product(productJson.name, productJson.code, productJson.description, productJson.price, productJson.ipi);
           this.addProduct(product);
         }
 

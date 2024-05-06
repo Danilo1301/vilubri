@@ -231,7 +231,7 @@ function setupAPI()
 
       for(const product of otherChamada.products)
       {
-        const newProduct = new Product(product.name, product.code, product.description, product.price);
+        const newProduct = new Product(product.name, product.code, product.description, product.price, product.ipi);
         chamada.addProduct(newProduct);
       }
     }
@@ -378,6 +378,7 @@ function setupAPI()
     const name: string = req.body.product_name;
     const description: string = req.body.description;
     const price: string = req.body.price;
+    const ipi: string = req.body.ipi;
 
     if(chamada.hasProductCode(code))
     {
@@ -385,7 +386,7 @@ function setupAPI()
       return;
     }
 
-    const product = new Product(name, code, description, price);
+    const product = new Product(name, code, description, price, ipi);
 
     chamada.addProduct(product);
 
@@ -452,11 +453,13 @@ function setupAPI()
     const name: string = req.body.product_name;
     const description: string = req.body.description;
     const price: string = req.body.price;
+    const ipi: string = req.body.ipi;
 
     //product.code = code;
     product.name = name;
     product.description = description;
     product.price = price;
+    product.ipi = ipi;
 
     saveData();
 

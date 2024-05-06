@@ -6,15 +6,17 @@ export class Product {
     public code: string;
     public description: string;
     public price: string;
+    public ipi: string;
 
     public chamada?: Chamada;
 
-    constructor(name: string, code: string, description: string, price: string)
+    constructor(name: string, code: string, description: string, price: string, ipi: string)
     {
         this.name = name;
         this.code = code;
         this.description = description;
         this.price = price;
+        this.ipi = ipi;
     }
 
     public toJSON()
@@ -24,6 +26,7 @@ export class Product {
             code: this.code,
             description: this.description,
             price: this.price,
+            ipi: this.ipi,
             index: this.chamada?.products.indexOf(this) || 0
         }
 
