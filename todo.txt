@@ -10,4 +10,7 @@
 
 [03/05/24]
 [X] add script to organize codes
-[ ] add status 'NOT COMPLETE' to chamadas
+[X] add status 'NOT COMPLETE' to chamadas
+
+[28/05/24]
+[X] sort 'searchProducts by code' by most recent

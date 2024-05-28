@@ -124,7 +124,7 @@ function ChamadasList({chamadas}: { chamadas: ChamadaJSON[] | undefined }) {
 
     return (
         <div>
-            {chamadas.map((product, index) => <ChamadaItem key={index} data={product}></ChamadaItem>)}
+            {chamadas.sort((a, b) => b.createdDate - a.createdDate).map((product, index) => <ChamadaItem key={index} data={product}></ChamadaItem>)}
         </div>
     );
 }
