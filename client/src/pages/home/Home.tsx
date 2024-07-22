@@ -12,8 +12,11 @@ function ProductPage() {
             <div className='mb-3'>
                 <a href="/database">Database</a>
             </div>
-            <div>
+            <div className='mb-3'>
                 <a href="/searchProducts">Procurar produtos</a>
+            </div>
+            <div>
+                <a href="/comparePrices">Comparar preços</a>
             </div>
         </div>
     );

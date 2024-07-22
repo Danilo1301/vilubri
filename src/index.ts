@@ -3,6 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import multer from 'multer';
 
+import xlsx from 'node-xlsx';
+
 import { IProduct } from './IProduct';
 import { IPageData } from './IPageData';
 import { Chamada } from './Chamada';
@@ -12,6 +14,7 @@ import { ChamadaJSON } from './ChamadaJSON';
 
 import { createExtractorFromFile } from 'node-unrar-js'
 import { ProductJSON_Search } from './ProductJSON_Search';
+import { ProductJSON_Prices } from './ProductJSON_Prices';
 
 require("./env")("./.data/env.json");
 
@@ -109,6 +112,112 @@ function main()
   saveData();
 
   //console.log(getChamadaHomeList());
+
+  //test();
+}
+
+interface ProcessPricesIds {
+  description: string,
+  code: string,
+  price: string
+}
+
+function processPricesTable(filePath: string, options: ProcessPricesIds)
+{
+  const workSheetsFromFile = xlsx.parse(filePath);
+
+  const tableIds: {[key: string]: number} = {
+    'A': 0,
+    'B': 1,
+    'C': 2,
+    'D': 3,
+    'E': 4,
+    'F': 5
+  }
+
+  const nameTableId = tableIds[options.description];
+  const codeTableId = tableIds[options.code];
+  const priceTableId = tableIds[options.price];
+
+  const data = workSheetsFromFile[0].data;
+
+  const changedProducts: ProductJSON_Prices[] = [];
+
+  for(const a of data)
+  {
+    const name = a[nameTableId];
+    const code = a[codeTableId];
+    const price = parseFloat(parseFloat(a[priceTableId]).toFixed(2));
+
+    if(a[0].includes("Descrição")) continue;
+
+    //const newProduct = new Product(name, code, "", price, "");
+
+    const product = findLatestProduct(code)
+
+    if(product)
+    {
+      const oldPrice = product.getPriceInNumber();
+      
+      console.log(`Product: ${code}`);
+      console.log(`Old price:`, oldPrice);
+      console.log(`New price:`, price);
+
+      if(oldPrice != price)
+      {
+        console.log(`Price changed!`);
+
+        const json: ProductJSON_Prices = {
+          product: product.toJSON(),
+          newPrice: price,
+          newProduct: false
+        }
+        changedProducts.push(json);
+      }
+    } else {
+      console.log(`Could not find product ${code}`);
+      
+      const newProduct = new Product(name, code, "", `R$ ${price}`, "");
+
+      const json: ProductJSON_Prices = {
+        product: newProduct.toJSON(),
+        newPrice: price,
+        newProduct: true
+      }
+      changedProducts.push(json);
+    }
+
+    //console.log(newProduct);
+  }
+
+  return changedProducts;
+}
+
+function findLatestProduct(code: string)
+{
+  let allChamadas = Array.from(chamadas.values());
+
+  allChamadas = allChamadas.sort((a, b) => {
+    return a.date.getTime() - b.date.getTime()
+  });
+
+  //console.log("--")
+
+  let latestProduct: Product | undefined = undefined;
+
+  for(const chamada of allChamadas)
+  {
+    for(const product of chamada.products)
+    {
+      if(product.code != code) continue;
+
+      latestProduct = product;
+    }
+  }
+
+  //console.log(latestProduct);
+
+  return latestProduct;
 }
 
 function readFile(path: string)
@@ -735,6 +844,39 @@ function setupAPI()
     }
 
     res.json(json);
+  });
+
+  app.post('/api/processPricesTable', upload.single('file'), (req, res) => {
+    const id = req.params.id;
+
+    console.log(req.file)
+
+    console.log(req.body)
+
+    let changedProducts: ProductJSON_Prices[] = [];
+    const options: ProcessPricesIds = {
+      description: req.body["description-id"],
+      code: req.body["code-id"],
+      price: req.body["price-id"]
+    }
+
+    if(req.file)
+    {
+      console.log(req.file.filename)
+
+      const path = req.file.path;
+      const newPath = `uploads/table.xlsx`;
+
+      fs.renameSync(path, newPath);
+
+      changedProducts = processPricesTable(newPath, options);
+
+      console.log(`Removing table...`);
+
+      fs.rmSync(newPath);
+    }
+
+    res.json(changedProducts);
   });
 }
 

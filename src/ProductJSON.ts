@@ -3,6 +3,7 @@ export interface ProductJSON {
     code: string;
     description: string;
     price: string;
+    priceNumber: number;
     ipi: string;
     index: number;
 }

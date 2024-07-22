@@ -14,3 +14,6 @@
 
 [28/05/24]
 [X] sort 'searchProducts by code' by most recent
+
+[22/07/24]
+[X] load and compare prices from table

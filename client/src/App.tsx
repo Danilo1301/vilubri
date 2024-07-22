@@ -10,6 +10,7 @@ import NewProduct from './pages/newProduct/NewProduct';
 import Database from './pages/database/Database';
 import SearchProducts from './pages/searchProducts/SearchProducts';
 import EditProduct from './pages/newProduct/EditProduct';
+import ComparePrices from './pages/comparePrices/ComparePrices';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/chamadas/:id/product/:productIndex/edit" element={<EditProduct/>} />
         <Route path="/database" element={<Database/>} />
         <Route path="/searchProducts" element={<SearchProducts/>} />
+        <Route path="/comparePrices" element={<ComparePrices/>} />
 
         
     

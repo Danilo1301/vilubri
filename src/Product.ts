@@ -26,10 +26,22 @@ export class Product {
             code: this.code,
             description: this.description,
             price: this.price,
+            priceNumber: this.getPriceInNumber(),
             ipi: this.ipi,
             index: this.chamada?.products.indexOf(this) || 0
         }
 
         return json;
+    }
+    
+    public getPriceInNumber()
+    {
+        let str = this.price;
+
+        str = str.replace("R$ ", "");
+        str = str.replace("+ IPI", "");
+        str = str.replace(",", ".");
+        
+        return parseFloat(str);
     }
 }
