@@ -4,22 +4,27 @@ import { ProductJSON_Prices } from '../../../../src/ProductJSON_Prices'
 import { ChamadaJSON } from '../../../../src/ChamadaJSON';
 
 function ProductItem({data}: { data: ProductJSON_Prices }) {
-    let titleStr = "";
-    let color = "#000000";
+    let titleStr = "Mesmo preço";
+    let color = "#bebebe";
     if(data.newProduct)
     {
         titleStr = `Novo produto`;
         color = "#df8817";
-    } else {
+    }
+
+    if(data.changedPrice)
+    {
         titleStr = `Preço alterou`;
+        color = "#000000";
     }
 
     let diferenceStr = "";  
-    if(data.newProduct)
+    if(data.newProduct || !data.changedPrice)
     {
         diferenceStr = data.product.price;
     } else {
-        diferenceStr = `${data.product.price} → ${data.newPrice}`;
+        let ipi = data.product.price.includes("IPI") ? " + IPI" : "";
+        diferenceStr = `${data.product.priceNumber}${ipi} → ${data.newPrice}${ipi}`;
     }
 
     return <>

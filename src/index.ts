@@ -114,6 +114,10 @@ function main()
   //console.log(getChamadaHomeList());
 
   //test();
+
+  const product = findLatestProduct("1153");
+
+  console.log(product?.getPriceInNumber())
 }
 
 interface ProcessPricesIds {
@@ -141,7 +145,7 @@ function processPricesTable(filePath: string, options: ProcessPricesIds)
 
   const data = workSheetsFromFile[0].data;
 
-  const changedProducts: ProductJSON_Prices[] = [];
+  const products: ProductJSON_Prices[] = [];
 
   for(const a of data)
   {
@@ -163,34 +167,40 @@ function processPricesTable(filePath: string, options: ProcessPricesIds)
       console.log(`Old price:`, oldPrice);
       console.log(`New price:`, price);
 
-      if(oldPrice != price)
+      const json: ProductJSON_Prices = {
+        product: product.toJSON(),
+        newPrice: price,
+        newProduct: false,
+        changedPrice: oldPrice != price
+      }
+      products.push(json);
+
+      if(json.changedPrice)
       {
         console.log(`Price changed!`);
-
-        const json: ProductJSON_Prices = {
-          product: product.toJSON(),
-          newPrice: price,
-          newProduct: false
-        }
-        changedProducts.push(json);
       }
     } else {
       console.log(`Could not find product ${code}`);
       
-      const newProduct = new Product(name, code, "", `R$ ${price}`, "");
+      let priceStr = `${price}`;
+      priceStr = priceStr.replace(".", ",");
+      priceStr = `R$ ${priceStr}`;
+
+      const newProduct = new Product(name, code, "", priceStr, "");
 
       const json: ProductJSON_Prices = {
         product: newProduct.toJSON(),
         newPrice: price,
-        newProduct: true
+        newProduct: true,
+        changedPrice: false
       }
-      changedProducts.push(json);
+      products.push(json);
     }
 
     //console.log(newProduct);
   }
 
-  return changedProducts;
+  return products;
 }
 
 function findLatestProduct(code: string)

@@ -38,10 +38,11 @@ export class Product {
     {
         let str = this.price;
 
+        str = str.replace(".", "");
         str = str.replace("R$ ", "");
         str = str.replace("+ IPI", "");
         str = str.replace(",", ".");
-        
+
         return parseFloat(str);
     }
 }
