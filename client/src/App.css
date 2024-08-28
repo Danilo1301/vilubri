@@ -50,10 +50,6 @@ html, body, #root {
     font-weight: bold;
 }
 
-.nav {
-    background-color: #F1B201;
-}
-
 .nav-image {
     width: 120px;
 }
@@ -66,15 +62,9 @@ html, body, #root {
 }
 
 .nav-date {
-    background-color: #e5c703;
     border-radius: 20px;
 }
 
-.footer {
-    background-color: #F1B201;
-}
-
 .footer-number {
-    background-color: #e5c703;
     border-radius: 20px;
 }

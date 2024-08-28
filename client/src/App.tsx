@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createContext, useState } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css';
 import Home from './pages/home/Home';
@@ -11,27 +11,41 @@ import Database from './pages/database/Database';
 import SearchProducts from './pages/searchProducts/SearchProducts';
 import EditProduct from './pages/newProduct/EditProduct';
 import ComparePrices from './pages/comparePrices/ComparePrices';
+import { ColorSettings, ColorSettingsContext, defaultColorSettings } from './ColorSettings';
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home/>} />
-        <Route path="/productPage" element={<ProductPage/>} />
-        <Route path="/chamadas" element={<Chamadas/>} />
-        <Route path="/chamadas/new" element={<NewChamada/>} />
-        <Route path="/chamadas/:id" element={<ChamadaPage/>} />
-        <Route path="/chamadas/:id/product/new" element={<NewProduct/>} />
-        <Route path="/chamadas/:id/product/:productIndex/edit" element={<EditProduct/>} />
-        <Route path="/database" element={<Database/>} />
-        <Route path="/searchProducts" element={<SearchProducts/>} />
-        <Route path="/comparePrices" element={<ComparePrices/>} />
+  const [colorSettings, setColorSettings] = useState<ColorSettings>(defaultColorSettings);
 
-        
-    
-        {/*<Route path="*" element={<NoPage />} />*/}
-      </Routes>
-    </BrowserRouter>
+  const updateColorSettings = (newColorSettings: Partial<ColorSettings>) => {
+    setColorSettings((prevColorSettings) => {
+          return { ...prevColorSettings, ...newColorSettings };
+      });
+  };
+
+  return (
+    <ColorSettingsContext.Provider value={{ colorSettings, setColorSettings(newColorSettings) {
+      console.log("setting color settings")
+      updateColorSettings(newColorSettings);
+    }}}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home/>} />
+          <Route path="/productPage" element={<ProductPage/>} />
+          <Route path="/chamadas" element={<Chamadas/>} />
+          <Route path="/chamadas/new" element={<NewChamada/>} />
+          <Route path="/chamadas/:id" element={<ChamadaPage/>} />
+          <Route path="/chamadas/:id/product/new" element={<NewProduct/>} />
+          <Route path="/chamadas/:id/product/:productIndex/edit" element={<EditProduct/>} />
+          <Route path="/database" element={<Database/>} />
+          <Route path="/searchProducts" element={<SearchProducts/>} />
+          <Route path="/comparePrices" element={<ComparePrices/>} />
+
+          
+      
+          {/*<Route path="*" element={<NoPage />} />*/}
+        </Routes>
+      </BrowserRouter>
+    </ColorSettingsContext.Provider>
   );
 }
 
