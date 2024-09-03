@@ -24,6 +24,7 @@ const upload = multer({ dest: 'uploads/' });
 const bodyParser = require('body-parser');
 const archiver = require('archiver');
 
+const PATH_COLORS = "publicData/colors.json"
 const PATH_PRODUCT = ".data/product/";
 const PATH_PAGEDATA = ".data/pageData/";
 const PATH_PRODUCTIMAGES = ".data/productImages/";
@@ -282,6 +283,16 @@ function setupAPI()
     console.log("body:", req.body);
 
     res.json(req.body);
+  })
+
+  app.get('/api/colors', (req, res) => {
+    console.log(`/api/colors`);
+
+    const json = JSON.parse(fs.readFileSync(PATH_COLORS, "utf-8"));
+
+    const currentColor: string = json.currentColor;
+
+    res.json(json.colors[currentColor]);
   })
 
   app.get('/api/product', (req, res) => {
@@ -664,8 +675,11 @@ function setupAPI()
 
     if(req.file)
     {
-      const oldFilePath = `./uploads/${req.file.filename}`
-      const newRarPath = `./uploads/${req.file.filename}.rar`;
+      //const oldFilePath = `./uploads/${req.file.filename}`
+      const oldFilePath = path.resolve(__dirname, "..", "uploads", req.file.filename);
+
+      //const newRarPath = `./uploads/images.rar`;
+      const newRarPath = path.resolve(__dirname, "..", "uploads", `${req.file.filename}.rar`);
 
       console.log(`'${oldFilePath}' renaming to '${newRarPath}'`)
 
@@ -676,10 +690,22 @@ function setupAPI()
       //fs.mkdirSync(extractDestination);
 
       console.log(`Extracting files...`);
+      console.log(`From ${newRarPath}`);
+      console.log(`To ${extractDestination}`);
 
-      await extractRarArchive(newRarPath, extractDestination)
+      if(fs.existsSync(newRarPath))
+      {
+        console.log(`RAR exists`);
+      }
 
-      console.log(`Deleting old images...`);
+      const err = await extractRarArchive(newRarPath, extractDestination);
+
+      if(err)
+      {
+        return res.status(400).send({
+          error: err
+        });
+      }
     
       let files = fs.readdirSync(PATH_PRODUCTIMAGES);
       console.log(files)
@@ -891,6 +917,7 @@ function setupAPI()
 }
 
 async function extractRarArchive(file: any, destination: string) {
+  
   try {
     // Create the extractor with the file information (returns a promise)
     const extractor = await createExtractorFromFile({
@@ -901,9 +928,12 @@ async function extractRarArchive(file: any, destination: string) {
     // Extract the files
     [...extractor.extract().files];
   } catch (err) {
-    // May throw UnrarError, see docs
+    const message = (err as Error).message;
     console.error(err);
+    return message;
   }
+
+  return
 }
 
 function zipDirectory(sourceDir: string, outPath: string) {

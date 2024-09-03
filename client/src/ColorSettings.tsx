@@ -13,10 +13,10 @@ export interface ColorSettings {
   }
   
   export const defaultColorSettings: ColorSettings = {
-    navColor: '#b191ff',
-    dateColor: '#d4c3ff',
-    backgroundColor: '#c3c6ff',
-    itemColor: '#e3e2ff'
+    navColor: '#00C0FA',
+    dateColor: '#aee9ff',
+    backgroundColor: '#ADEBFB',
+    itemColor: '#9ADCFF'
   }
   
   export const ColorSettingsContext = createContext<ColorSettingsContextType>({

@@ -19,7 +19,7 @@
 [X] load and compare prices from table
 
 [25/07/24]
-[X]Corrigir bug: R$ 1.450,41 + IPI → 1450.41
+[X] Corrigir bug: R$ 1.450,41 + IPI → 1450.41
 [X] mostrar todos os produtos, mesmo que nao tenha mudado o preço
 
 selecionar produtos para atualizar automaticamente os preços
@@ -28,3 +28,6 @@ corrigir bug quando converte R$ 1.099.53 para float
 
 adicionar funcao que autocompleta nome do produto após colocar o código
 e talvez a imagem também
+
+[ ] Customizar tamanho das imagens
+[X] Customizar cores

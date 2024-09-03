@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css';
 import Home from './pages/home/Home';
@@ -21,6 +21,27 @@ function App() {
           return { ...prevColorSettings, ...newColorSettings };
       });
   };
+
+  useEffect(() => {
+    console.log("get colors");
+
+
+      fetch(`/api/colors`)
+      .then(response => response.json())
+      .then((data: any) => {
+          console.log(data)
+
+          updateColorSettings(
+            {
+              navColor: data.navColor,
+              dateColor: data.dateColor,
+              backgroundColor: data.backgroundColor,
+              itemColor: data.itemColor
+            }
+          )
+      });
+
+  }, []);
 
   return (
     <ColorSettingsContext.Provider value={{ colorSettings, setColorSettings(newColorSettings) {

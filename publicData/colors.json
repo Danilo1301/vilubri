@@ -1,0 +1,17 @@
+{
+    "currentColor": "blue",
+    "colors": {
+        "blue": {
+            "navColor": "#00C0FA",
+            "dateColor": "#aee9ff",
+            "backgroundColor": "#ADEBFB",
+            "itemColor": "#9ADCFF"
+        },
+        "yellow": {
+            "navColor": "#F1B201",
+            "dateColor": "#E5C703",
+            "backgroundColor": "#EEEEEE",
+            "itemColor": "#DADADA"
+        }
+    }
+}
