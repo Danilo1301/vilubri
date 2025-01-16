@@ -150,11 +150,17 @@ function processPricesTable(filePath: string, options: ProcessPricesIds)
 
   for(const a of data)
   {
+    if(a.length == 0) continue;
+
     const name = a[nameTableId];
     const code = a[codeTableId];
     const price = parseFloat(parseFloat(a[priceTableId]).toFixed(2));
 
-    if(a[0].includes("Descrição")) continue;
+    console.log(`name ${name}`);
+    console.log(`code ${code}}`);
+
+    if(a[0].toLowerCase().includes("descrição")) continue;
+    if(a[0].toLowerCase().includes("descricao")) continue;
 
     //const newProduct = new Product(name, code, "", price, "");
 

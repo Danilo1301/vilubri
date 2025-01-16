@@ -62,6 +62,8 @@ function ComparePrices() {
     const [codeId, setCodeId] = React.useState("B");
     const [priceId, setPriceId] = React.useState("F");
 
+    const [changedProducts, setChangedProducts] = React.useState<ProductJSON_Prices[]>([]);
+
     const handleSubmit = (event: any) => {
         const button = document.getElementById("submit-table-button") as HTMLButtonElement;
         //button.disabled = true;
@@ -86,7 +88,28 @@ function ComparePrices() {
 
                     console.log("json:", json);
                     
-                    setProducts(data);
+                    setProducts(json);
+                    
+                    const lChangedProducts: ProductJSON_Prices[] = [];
+
+                    for(const product of json)
+                    {
+                        if(product.changedPrice)
+                        {
+                            const difference = product.newPrice - product.product.priceNumber;
+                            const absDifferece = Math.abs(difference);
+
+                            console.log(difference);
+
+                            if(absDifferece > 5)
+                            {
+                                lChangedProducts.push(product);
+                            }
+
+                        }
+                    }
+
+                    setChangedProducts(lChangedProducts);
 
                     alert("Uploaded!");
                     
@@ -103,6 +126,9 @@ function ComparePrices() {
 
         event.preventDefault();
     }
+
+
+    if(!changedProducts) return <>Error</>;
 
     return (
         <div className='container'>
@@ -130,6 +156,28 @@ function ComparePrices() {
             </form>
 
             <ProductsList products={products}></ProductsList>
+
+            <br></br>
+            <br></br>
+
+            <div>
+                <div>Novos:</div>
+
+                <div>Alterados +R$ 5</div>
+
+                {
+                    changedProducts.map((product, i) => {
+
+                        const difference = product.newPrice - product.product.priceNumber;
+
+                        return <div key={i}>
+                            {product.product.code} - {product.product.name} (alterou {difference.toFixed(2)})
+                        </div>;
+                    })
+                }
+
+                <div>Pouco alterados</div>
+            </div>
         </div>
     );
 }
